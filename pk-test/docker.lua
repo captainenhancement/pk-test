@@ -44,10 +44,9 @@ local log_cwd = function()
   if not res then
     log_error('lfs.currentdir() failure: ', err)
     return false
-  else
-    dbg('current work dir is ', res)
-    return true
   end
+  dbg('current work dir is ', res)
+  return true
 end
 
 local fail = function(err_msg)
@@ -144,9 +143,8 @@ local exec_handler = function(handler)
     local err = res
     log_error('handler has been crashed with error: ', err)
     return false
-  else
-    return true
   end
+  return true
 end
 
 -- starts docker container, calls handler, stops container after
