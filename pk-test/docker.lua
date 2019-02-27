@@ -60,13 +60,13 @@ local change_dir_safe = function(dir)
   if not ok then
     err = res
     pcall(log_cwd)
-    pcall(log_error, 'cannot change dir crash: ', err)
+    pcall(log_error, 'Can not change dir crash: ', err)
     return false
   end
 
   if not res then
     pcall(log_cwd)
-    pcall(log_error, 'cannot change dir: ', err)
+    pcall(log_error, 'Can not change dir: ', err)
     return false
   end
 
@@ -170,18 +170,18 @@ local do_with_docker = function (cfg_dir, handler)
   log('do_with_docker(): starting docker container')
   local cur_dir = get_cur_dir_safe()
   if not cur_dir then
-    fail('cannot remember current dir')
+    fail('Can not get app current dir')
   end
   if not change_dir_safe(cfg_dir) then
-    fail('cannot enter cfg dir')
+    fail('Can not enter cfg dir')
   end
   if not start_container_safe() then
     change_dir_safe(cur_dir)
-    fail('cannot start container')
+    fail('Can not start container')
   end
   if not change_dir_safe(cur_dir) then
     stop_container_safe()
-    fail('cannot return to current dir')
+    fail('Can not return to app current dir')
   end
 
   -- call handler()
@@ -198,17 +198,17 @@ local do_with_docker = function (cfg_dir, handler)
   log('do_with_docker(): stopping container')
   local cur_dir = get_cur_dir_safe()
   if not cur_dir then
-    fail('cannot remember current dir 2')
+    fail('Can not get app current dir 2')
   end
   if not change_dir_safe(cfg_dir) then
-    fail('cannot enter cfg dir 2')
+    fail('Can not enter cfg dir 2')
   end
   if not stop_container_safe() then
     change_dir_safe(cur_dir)
-    fail('cannot stop container')
+    fail('Can not stop container')
   end
   if not change_dir_safe(cur_dir) then
-    fail('cannot return to current dir 2')
+    fail('Can not return to app current dir 2')
   end
 
   return true
