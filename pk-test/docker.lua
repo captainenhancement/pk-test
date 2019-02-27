@@ -127,6 +127,7 @@ local stop_container_safe = function()
     return false
   end
 
+  -- check, if shell command execution ended with errors
   if res ~= 0 then
     pcall(log_cwd)
     pcall(log_error, '"docker-compose down" returned non-zero value')
