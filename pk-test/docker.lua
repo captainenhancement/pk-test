@@ -160,9 +160,9 @@ local do_with_docker = function (cfg_dir, handler)
   )
 
   log(
-    'do_with_docker() is called with arguments: dir=',
+    'do_with_docker() is called with arguments: dir =',
     cfg_dir,
-    'handler=',
+    'handler =',
     handler
   )
 
