@@ -1,0 +1,29 @@
+pk-test/docker.lua
+
+use aplicado/error.lua/fail()
+
+use xpcall() where err = dir
+
+wrap *_safe() using xpcall()
+
+----------------------
+
+test/cases/0030-docker.lua
+
+do something with constants
+https://github.com/logiceditor-com/pk-test/pull/5#discussion_r260506985
+
+check avail.: "Кажется, есть ensure_is_nil/ensure_fail или что-то вроде такого. Специально для тестов."
+
+----------------------
+
+rename stalone
+
+----------------------
+
+test/data/echoserv_container5/stalone_echoserv.lua 
+
+fix indent tab -> spaces (?)
+
+use l-ed-com lib embed http serv instead (?)
+
