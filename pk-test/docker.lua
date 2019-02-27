@@ -166,14 +166,9 @@ local do_with_docker = function (cfg_dir, handler)
     handler
   )
 
-  -- it is not a static variable. functions below
-  -- was written to avoid deeply nested ugly 'if' blocks,
-  -- so look on functions as on named-blocks-for-using-in-'if'.
-  local cur_dir
-
   -- start docker container
   log('do_with_docker(): starting docker container')
-  cur_dir = get_cur_dir_safe()
+  local cur_dir = get_cur_dir_safe()
   if not cur_dir then
     fail('cannot remember current dir')
   end
@@ -201,7 +196,7 @@ local do_with_docker = function (cfg_dir, handler)
 
   -- stop container
   log('do_with_docker(): stopping container')
-  cur_dir = get_cur_dir_safe()
+  local cur_dir = get_cur_dir_safe()
   if not cur_dir then
     fail('cannot remember current dir 2')
   end
