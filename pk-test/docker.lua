@@ -97,7 +97,7 @@ local exec_handler = function(handler)
   local ok, err = pcall(handler)
 
   if not ok then
-    log_error('handler has been crashed with error: ', err)
+    pcall(log_error, 'handler has been crashed with error: ', err)
     return false
   end
   return true
@@ -121,7 +121,7 @@ local do_with_docker = function (cfg_dir, handler)
     handler
   )
 
-  -- start docker container
+  -- start docker container --
   log('do_with_docker(): starting docker container')
   local _, cur_dir = xpcall(
     get_cur_dir,
@@ -132,7 +132,6 @@ local do_with_docker = function (cfg_dir, handler)
   if not cur_dir then
     fail('Can not get app current dir')
   end
-
   -- change dir
   local _, ok = xpcall(
     function()
@@ -145,39 +144,93 @@ local do_with_docker = function (cfg_dir, handler)
   if not ok then
     fail('Can not enter cfg dir')
   end
-  if not start_container() then
-    change_dir(cur_dir)
+  -- start container
+  local _, ok = xpcall(
+    start_container,
+    function()
+      return nil
+    end
+  )
+  if not ok then
+    pcall(change_dir, cur_dir)
     fail('Can not start container')
   end
-  if not change_dir(cur_dir) then
-    stop_container()
+  -- return to app dir
+  local _, ok = xpcall(
+    function()
+      return change_dir(cur_dir)
+    end,
+    function()
+      return nil
+    end
+  )
+  if not ok then
+    pcall(stop_container)
     fail('Can not return to app current dir')
   end
 
-  -- call handler()
+  -- call handler() --
   log('do_with_docker(): executing handler()')
   if not exec_handler(handler) then
-    if change_dir(cfg_dir) then
-      stop_container()
-      change_dir(cur_dir)
+    local _, ok = xpcall(
+      function()
+        return change_dir(cfg_dir)
+      end,
+      function()
+        return nil
+      end
+    )
+    if ok then
+      pcall(stop_container)
+      pcall(change_dir, cur_dir)
     end
     fail('handler execution error')
   end
 
-  -- stop container
+  -- stop container --
   log('do_with_docker(): stopping container')
-  local cur_dir = get_cur_dir()
+  local _, cur_dir = xpcall(
+    get_cur_dir,
+    function()
+      return nil
+    end
+  )
   if not cur_dir then
     fail('Can not get app current dir 2')
   end
-  if not change_dir(cfg_dir) then
+  -- change to cfg dir
+  local _, ok = xpcall(
+    function()
+      return change_dir(cfg_dir)
+    end,
+    function()
+      return nil
+    end
+  )
+  if not ok then
     fail('Can not enter cfg dir 2')
   end
-  if not stop_container() then
-    change_dir(cur_dir)
+  -- stop container
+  local _, ok = xpcall(
+    stop_container,
+    function()
+      return nil
+    end
+  )
+  if not ok then
+    pcall(change_dir, cur_dir)
     fail('Can not stop container')
   end
-  if not change_dir(cur_dir) then
+  -- change to app dir
+  local _, ok = xpcall(
+    function()
+      return change_dir(cur_dir)
+    end,
+    function()
+      return nil
+    end
+  )
+  if not ok then
     fail('Can not return to app current dir 2')
   end
 

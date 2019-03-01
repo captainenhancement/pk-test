@@ -2,9 +2,9 @@ pk-test/docker.lua
 
 FROZEN: use aplicado/error.lua/fail()
 
-use xpcall() where err = dir
+OK: use xpcall() where err = dir
 
-wrap *_safe() using xpcall()
+OK: wrap *_safe() using xpcall()
 
 ----------------------
 
