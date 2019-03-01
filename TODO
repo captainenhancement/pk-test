@@ -2,10 +2,6 @@ pk-test/docker.lua
 
 FROZEN: use aplicado/error.lua/fail()
 
-OK: use xpcall() where err = dir
-
-OK: wrap *_safe() using xpcall()
-
 ----------------------
 
 test/cases/0030-docker.lua
@@ -17,13 +13,7 @@ check avail.: "Кажется, есть ensure_is_nil/ensure_fail или что-
 
 ----------------------
 
-rename stalone
-
-----------------------
-
 test/data/echoserv_container5/stalone_echoserv.lua 
-
-fix indent tab -> spaces (?)
 
 use l-ed-com lib embed http serv instead (?)
 

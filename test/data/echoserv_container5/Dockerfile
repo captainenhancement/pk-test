@@ -6,5 +6,5 @@ WORKDIR /code
 RUN apt-get -y update
 RUN apt-get -y install lua5.1
 RUN apt-get -y install lua-socket
-CMD ["lua", "stalone_echoserv.lua"]
+CMD ["lua", "standalone_echoserv.lua"]
 
