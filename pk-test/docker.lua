@@ -54,94 +54,49 @@ local fail = function(err_msg)
   error(err_msg)
 end
 
-local change_dir_safe = function(dir)
-  local ok, res, err = pcall(lfs.chdir, dir)
-
+local change_dir = function(dir)
+  local ok, descr = lfs.chdir(dir)
   if not ok then
-    err = res
-    pcall(log_cwd)
-    pcall(log_error, 'Can not change dir crash: ', err)
-    return false
+   log_cwd()
+   log_error('Can not change dir: ', descr)
+   return false
   end
-
-  if not res then
-    pcall(log_cwd)
-    pcall(log_error, 'Can not change dir: ', err)
-    return false
-  end
-
   return true
 end
 
-local get_cur_dir_safe = function()
-  local ok, dir, err = pcall(lfs.currentdir)
-
-  if not ok then
-    err = dir
-    pcall(log_error, 'lfs.currentdir() is crashed: ', err)
-    return nil, "crash"
+local get_cur_dir = function()
+  local cur_dir, descr = lfs.currentdir()
+  if not cur_dir then
+    log_error('lfs.currentdir() failure: ', descr)
+    return nil, "lfs.currentdir() failure"
   end
-
-  if not dir then
-    pcall(log_error, 'lfs.currentdir() failure: ', err)
-    return nil, err
-  end
-
-  return dir
+  return cur_dir
 end
 
-local start_container_safe = function()
-  local ok, res = pcall(shell_exec, 'docker-compose', 'up', '-d')
-
-  if not ok then
-    local err = res
-    pcall(log_cwd)
-    pcall(
-      log_error,
-      'call of shell_exec("docker-compose up -d") is crashed:',
-      err
-    )
+local start_container = function()
+  local status = shell_exec('docker-compose', 'up', '-d')
+  if status ~= 0 then
+    log_cwd()
+    log_error('"docker-compose up -d" returned non-zero value')
     return false
   end
-
-  if res ~= 0 then
-    pcall(log_cwd)
-    pcall(log_error, '"docker-compose up -d" returned non-zero value')
-    return false
-  end
-
   return true
 end
 
-local stop_container_safe = function()
-  local ok, res = pcall(shell_exec, 'docker-compose', 'down')
-
-  if not ok then
-    local err = res
-    pcall(log_cwd)
-    pcall(
-      log_error,
-      'call of shell_exec("docker-compose down") is crashed',
-      err
-    )
+local stop_container = function()
+  local status = shell_exec('docker-compose', 'down')
+  if status ~= 0 then
+    log_cwd()
+    log_error('"docker-compose down" returned non-zero value')
     return false
   end
-
-  -- check, if shell command execution ended with errors
-  if res ~= 0 then
-    pcall(log_cwd)
-    pcall(log_error, '"docker-compose down" returned non-zero value')
-    return false
-  end
-
   return true
 end
 
 local exec_handler = function(handler)
-  local ok, res = pcall(handler)
+  local ok, err = pcall(handler)
 
   if not ok then
-    local err = res
     log_error('handler has been crashed with error: ', err)
     return false
   end
@@ -168,46 +123,61 @@ local do_with_docker = function (cfg_dir, handler)
 
   -- start docker container
   log('do_with_docker(): starting docker container')
-  local cur_dir = get_cur_dir_safe()
+  local _, cur_dir = xpcall(
+    get_cur_dir,
+    function()
+      return nil
+    end
+  )
   if not cur_dir then
     fail('Can not get app current dir')
   end
-  if not change_dir_safe(cfg_dir) then
+
+  -- change dir
+  local _, ok = xpcall(
+    function()
+      return change_dir(cfg_dir)
+    end,
+    function()
+      return nil
+    end
+  )
+  if not ok then
     fail('Can not enter cfg dir')
   end
-  if not start_container_safe() then
-    change_dir_safe(cur_dir)
+  if not start_container() then
+    change_dir(cur_dir)
     fail('Can not start container')
   end
-  if not change_dir_safe(cur_dir) then
-    stop_container_safe()
+  if not change_dir(cur_dir) then
+    stop_container()
     fail('Can not return to app current dir')
   end
 
   -- call handler()
   log('do_with_docker(): executing handler()')
   if not exec_handler(handler) then
-    if change_dir_safe(cfg_dir) then
-      stop_container_safe()
-      change_dir_safe(cur_dir)
+    if change_dir(cfg_dir) then
+      stop_container()
+      change_dir(cur_dir)
     end
     fail('handler execution error')
   end
 
   -- stop container
   log('do_with_docker(): stopping container')
-  local cur_dir = get_cur_dir_safe()
+  local cur_dir = get_cur_dir()
   if not cur_dir then
     fail('Can not get app current dir 2')
   end
-  if not change_dir_safe(cfg_dir) then
+  if not change_dir(cfg_dir) then
     fail('Can not enter cfg dir 2')
   end
-  if not stop_container_safe() then
-    change_dir_safe(cur_dir)
+  if not stop_container() then
+    change_dir(cur_dir)
     fail('Can not stop container')
   end
-  if not change_dir_safe(cur_dir) then
+  if not change_dir(cur_dir) then
     fail('Can not return to app current dir 2')
   end
 
@@ -218,10 +188,10 @@ return
 {
   log_cwd = log_cwd;
   fail = fail;
-  change_dir_safe = change_dir_safe;
-  get_cur_dir_safe = get_cur_dir_safe;
-  stop_container_safe = stop_container_safe;
-  start_container_safe = start_container_safe;
+  change_dir = change_dir;
+  get_cur_dir = get_cur_dir;
+  stop_container = stop_container;
+  start_container = start_container;
   exec_handler = exec_handler;
   do_with_docker = do_with_docker;
 }

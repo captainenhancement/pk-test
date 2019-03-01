@@ -1,6 +1,6 @@
 pk-test/docker.lua
 
-use aplicado/error.lua/fail()
+FROZEN: use aplicado/error.lua/fail()
 
 use xpcall() where err = dir
 
