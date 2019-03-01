@@ -6,9 +6,6 @@ FROZEN: use aplicado/error.lua/fail()
 
 test/cases/0030-docker.lua
 
-do something with constants
-https://github.com/logiceditor-com/pk-test/pull/5#discussion_r260506985
-
 check avail.: "Кажется, есть ensure_is_nil/ensure_fail или что-то вроде такого. Специально для тестов."
 
 ----------------------
