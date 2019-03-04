@@ -1,20 +1,12 @@
 pk-test/docker.lua
 
 use aplicado/error.lua/fail()
-  search examples of use in le-code
 
 ----------------------
 
 test/cases/0030-docker.lua
 
 check avail.: "Кажется, есть ensure_is_nil/ensure_fail или что-то вроде такого. Специально для тестов."
-  search for them in le-libs
-
-----------------------
-
-test/data/echoserv_container5/stalone_echoserv.lua 
-  use l-ed-com lib embed http serv instead (?)
-    search in le-libs:
-      keywords "serv", "http"
-      review tree of each lib
-
+  fail: lua-nucleo/ensure/ensure_fails_with_substring(msg, fn, substring)
+  nil: -
+  replace

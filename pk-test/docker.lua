@@ -24,6 +24,12 @@ local shell_exec
         'shell_exec'
       }
 
+local fail
+      = import 'lua-aplicado/error.lua'
+      {
+        'fail'
+      }
+
 local arguments
       = import 'lua-nucleo/args.lua'
       {
@@ -47,11 +53,6 @@ local log_cwd = function()
   end
   dbg('current work dir is ', res)
   return true
-end
-
-local fail = function(err_msg)
-  log_error('do_with_docker():', err_msg)
-  error(err_msg)
 end
 
 local change_dir = function(dir)
@@ -130,7 +131,7 @@ local do_with_docker = function (cfg_dir, handler)
     end
   )
   if not cur_dir then
-    fail('Can not get app current dir')
+    fail('ddkr_apdir', 'Can not get app current dir')
   end
   -- change dir
   local _, ok = xpcall(
@@ -142,7 +143,7 @@ local do_with_docker = function (cfg_dir, handler)
     end
   )
   if not ok then
-    fail('Can not enter cfg dir')
+    fail('ddkr_encfg', 'Can not enter cfg dir')
   end
   -- start container
   local _, ok = xpcall(
@@ -153,7 +154,7 @@ local do_with_docker = function (cfg_dir, handler)
   )
   if not ok then
     pcall(change_dir, cur_dir)
-    fail('Can not start container')
+    fail('ddkr_rctnr', 'Can not start container')
   end
   -- return to app dir
   local _, ok = xpcall(
@@ -166,7 +167,7 @@ local do_with_docker = function (cfg_dir, handler)
   )
   if not ok then
     pcall(stop_container)
-    fail('Can not return to app current dir')
+    fail('ddkr_apret', 'Can not return to app current dir')
   end
 
   -- call handler() --
@@ -184,7 +185,7 @@ local do_with_docker = function (cfg_dir, handler)
       pcall(stop_container)
       pcall(change_dir, cur_dir)
     end
-    fail('handler execution error')
+    fail('ddkr_ehndr', 'handler execution error')
   end
 
   -- stop container --
@@ -196,7 +197,7 @@ local do_with_docker = function (cfg_dir, handler)
     end
   )
   if not cur_dir then
-    fail('Can not get app current dir 2')
+    fail('ddkr_adir2', 'Can not get app current dir 2')
   end
   -- change to cfg dir
   local _, ok = xpcall(
@@ -208,7 +209,7 @@ local do_with_docker = function (cfg_dir, handler)
     end
   )
   if not ok then
-    fail('Can not enter cfg dir 2')
+    fail('ddkr_ecfg2', 'Can not enter cfg dir 2')
   end
   -- stop container
   local _, ok = xpcall(
@@ -219,7 +220,7 @@ local do_with_docker = function (cfg_dir, handler)
   )
   if not ok then
     pcall(change_dir, cur_dir)
-    fail('Can not stop container')
+    fail('ddkr_tctnr', 'Can not stop container')
   end
   -- change to app dir
   local _, ok = xpcall(
@@ -231,7 +232,7 @@ local do_with_docker = function (cfg_dir, handler)
     end
   )
   if not ok then
-    fail('Can not return to app current dir 2')
+    fail('ddkr_aret2', 'Can not return to app current dir 2')
   end
 
   return true
