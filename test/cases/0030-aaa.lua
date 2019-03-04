@@ -60,3 +60,15 @@ test:case 'run-successfull-handler' (function()
   )
 end)
 
+--[[
+------------------------------
+ERRRR	table: 0x18af320
+------------------------------
+KV	1	function: 0x18e85e0
+KV	2	aaa
+------------------------------
+OK
+Total tests in suite:	1
+Successful:	1
+OK
+]]
