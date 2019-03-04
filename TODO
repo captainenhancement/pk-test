@@ -1,7 +1,5 @@
 pk-test/docker.lua
 
-use aplicado/error.lua/fail()
-
 ----------------------
 
 test/cases/0030-docker.lua
