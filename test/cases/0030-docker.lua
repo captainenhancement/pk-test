@@ -12,12 +12,11 @@ local do_with_docker
         'do_with_docker'
       }
 
-local ensure_equals, ensure_fails_with_substring, ensure_has_substring
+local ensure_equals, ensure_fails_with_substring
       = import 'lua-nucleo/ensure.lua'
       {
         'ensure_equals',
-        'ensure_fails_with_substring',
-        'ensure_has_substring'
+        'ensure_fails_with_substring'
       }
 
 --------------------------------------------------------------------------------
@@ -51,15 +50,11 @@ test:case 'run-handler-which-will-crash' (function()
     error('forced error')
   end
 
-  --[[
-  local ok = pcall(do_with_docker, CONTAINER_CFG_DIR, handler)
-  ensure_equals('handler() crashed (as expected)', ok, false)
-  ]]
   local test = function()
     do_with_docker(CONTAINER_CFG_DIR, handler)
   end
   ensure_fails_with_substring(
-    'forced handler error test behaved expectedly',
+    'handler raises an error',
     test,
     'forced error'
   )
@@ -71,22 +66,15 @@ test:case 'run-docker-with-wrong-dir' (function()
   end
 
   local ok, descr = pcall(do_with_docker, WRONG_DIR, handler)
-  ensure_equals('setting of wrong dir raises an error (as expected)', ok, false)
-  ensure_has_substring(
-    'wrong dir error has substring',
-    descr,
-    'Can not change dir'
-  )
-  --[[
+
   local test = function()
     do_with_docker(WRONG_DIR, handler)
   end
   ensure_fails_with_substring(
-    'forced wrong-dir test behaved unexpectedly',
+    'wrong dir raises an error',
     test,
     'Can not change dir'
   )
-  ]]
 end)
 
 test:case 'communicate-with-app-inside-contnr-via-tcp' (function()
