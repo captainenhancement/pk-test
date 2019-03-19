@@ -241,7 +241,6 @@ end
 return
 {
   log_cwd = log_cwd;
-  fail = fail;
   change_dir = change_dir;
   get_cur_dir = get_cur_dir;
   stop_container = stop_container;
