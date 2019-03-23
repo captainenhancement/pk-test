@@ -27,9 +27,9 @@ local WRONG_DIR = 'nothing/nowhere/1856916550571289837'
 --------------------------------------------------------------------------------
 
 local log, dbg, spam, log_error
-     = import 'lua-aplicado/log.lua' { 'make_loggers' } (
-         "test/docker", "T003"
-       )
+      = import 'lua-aplicado/log.lua' { 'make_loggers' } (
+        "test/docker", "T003"
+      )
 
 --------------------------------------------------------------------------------
 
