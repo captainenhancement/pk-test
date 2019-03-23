@@ -12,7 +12,7 @@ while true do
       sock:close()
       break
     end
-    sock:send(line.."\n")
+    sock:send(line .. "\n")
   end
 end
 
